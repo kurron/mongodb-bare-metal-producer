@@ -8,7 +8,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties( value = 'producer', ignoreUnknownFields = false )
 class ApplicationProperties {
 
-    String exchange
-    String queue
-    String routingKey
 }
