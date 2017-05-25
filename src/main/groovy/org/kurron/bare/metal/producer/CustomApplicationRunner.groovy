@@ -1,14 +1,11 @@
 package org.kurron.bare.metal.producer
 
 import groovy.util.logging.Slf4j
-import org.springframework.amqp.core.Message
-import org.springframework.amqp.core.MessageBuilder
-import org.springframework.amqp.core.MessageDeliveryMode
-import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.data.mongodb.core.MongoTemplate
 
 import java.util.concurrent.ThreadLocalRandom
 
@@ -22,7 +19,7 @@ class CustomApplicationRunner implements ApplicationRunner {
      * Handles AMQP communications.
      */
     @Autowired
-    private RabbitTemplate theTemplate
+    private MongoTemplate theTemplate
 
     @Autowired
     private ConfigurableApplicationContext theContext
@@ -30,32 +27,20 @@ class CustomApplicationRunner implements ApplicationRunner {
     @Autowired
     private ApplicationProperties theConfiguration
 
-    private static String generateMessageID() {
-        UUID.randomUUID().toString()
-    }
-
-    private static String generateCorrelationID() {
-        UUID.randomUUID().toString()
+    private static UUID generateModelID() {
+        UUID.randomUUID()
     }
 
     private static Date generateTimeStamp() {
-        Calendar.getInstance(TimeZone.getTimeZone('UTC')).time
+        Calendar.getInstance( TimeZone.getTimeZone('UTC') ).time
     }
 
     private static void randomize(byte[] buffer) {
         ThreadLocalRandom.current().nextBytes(buffer)
     }
 
-    private static Message createMessage(byte[] payload,
-                                         String contentType) {
-        MessageBuilder.withBody(payload)
-                .setContentType(contentType)
-                .setMessageId(generateMessageID())
-                .setTimestamp(generateTimeStamp())
-                .setAppId('bare-metal-producer')
-                .setCorrelationIdString(generateCorrelationID())
-                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
-                .build()
+    private static Model createModel( byte[] payload ) {
+        new Model( primaryKey: generateModelID(), timestamp: generateTimeStamp(),  randomBytes: payload )
     }
 
     @Override
@@ -73,15 +58,15 @@ class CustomApplicationRunner implements ApplicationRunner {
         def messages = (1..numberOfMessages).collect {
             def buffer = new byte[payloadSize]
             randomize(buffer)
-            createMessage(buffer, "application/octet-stream")
+            createModel( buffer )
         }
 
         log.info "Created ${messages.size()} messages. Sending them to stream."
 
         long start = System.currentTimeMillis()
         long completed = messages.parallelStream()
-                .map({ theTemplate.send(theConfiguration.exchange, theConfiguration.routingKey, it) })
-                .count()
+                                 .map({ theTemplate.save( it ) } )
+                                 .count()
         long stop = System.currentTimeMillis()
 
         long duration = stop - start
