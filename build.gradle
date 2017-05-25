@@ -4,7 +4,7 @@ buildscript {
 	}
 	dependencies {
 	    classpath "io.spring.gradle:dependency-management-plugin:${dependencyPluginVersion}"
-			classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+            classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
 	}
 }
 
@@ -64,6 +64,7 @@ defaultTasks = ['clean','build']
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all::indy'
-	compile('org.springframework.boot:spring-boot-starter-amqp')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+  compile('org.springframework.boot:spring-boot-starter-amqp')
+  compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+  testCompile('org.springframework.boot:spring-boot-starter-test')
 }
