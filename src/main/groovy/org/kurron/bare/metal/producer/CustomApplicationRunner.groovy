@@ -70,9 +70,9 @@ class CustomApplicationRunner implements ApplicationRunner {
         long stop = System.currentTimeMillis()
 
         long duration = stop - start
-        log.info('Published {} messages in {} milliseconds', completed, duration )
+        log.info('Inserted {} messages in {} milliseconds', completed, duration )
 
-        log.info 'Publishing complete'
+        log.info 'Insertions complete'
         theContext.close()
     }
 }
