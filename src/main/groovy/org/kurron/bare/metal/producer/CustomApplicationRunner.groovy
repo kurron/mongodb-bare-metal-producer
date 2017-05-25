@@ -52,12 +52,12 @@ class CustomApplicationRunner implements ApplicationRunner {
         def numberOfMessages = messageCount.first().toInteger()
         def payloadSize = messageSize.first().toInteger()
 
-        log.info "Uploading ${numberOfMessages} messages with a payload size of ${payloadSize} to broker"
+        log.info "Inserting ${numberOfMessages} messages with a binary payload size of ${payloadSize} to the database"
 
 
         def messages = (1..numberOfMessages).collect {
             def buffer = new byte[payloadSize]
-            randomize(buffer)
+            randomize( buffer )
             createModel( buffer )
         }
 
@@ -65,7 +65,7 @@ class CustomApplicationRunner implements ApplicationRunner {
 
         long start = System.currentTimeMillis()
         long completed = messages.parallelStream()
-                                 .map({ theTemplate.save( it ) } )
+                                 .map({ theTemplate.insert( it ) } )
                                  .count()
         long stop = System.currentTimeMillis()
 
