@@ -64,7 +64,6 @@ defaultTasks = ['clean','build']
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all::indy'
-  compile('org.springframework.boot:spring-boot-starter-amqp')
   compile('org.springframework.boot:spring-boot-starter-data-mongodb')
   testCompile('org.springframework.boot:spring-boot-starter-test')
 }
