@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.data.mongodb.core.MongoOperations
 
+import java.time.Duration
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -55,7 +56,7 @@ class CustomApplicationRunner implements ApplicationRunner {
         def numberOfDocuments = messageCount.first().toInteger()
         def payloadSize = messageSize.first().toInteger()
 
-        log.info "Inserting ${numberOfDocuments} documents with a binary payload size of ${payloadSize} to the database"
+        log.info "Inserting ${numberOfDocuments} documents with a binary payload size of ${payloadSize} into the database"
 
         def messages = (1..numberOfDocuments).collect {
             def buffer = new byte[payloadSize]
@@ -71,10 +72,10 @@ class CustomApplicationRunner implements ApplicationRunner {
                                  .count()
         long stop = System.currentTimeMillis()
 
-        long duration = stop - start
-        log.info('Inserted {} messages in {} milliseconds', completed, duration )
+        long durationMillis = stop - start
+        def durationISO = Duration.ofMillis( durationMillis )
+        log.info( '{} documents has taken {} to insert', completed, durationISO as String )
 
-        log.info 'Insertions complete'
         theContext.close()
     }
 }
