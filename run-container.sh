@@ -1,25 +1,18 @@
 #!/bin/bash
 
-HOST=${1:-localhost}
-VHOST=${2:-/}
-USERNAME=${3:-guest}
-PASSWORD=${4:-guest}
-MESSAGE_COUNT=${5:-2500}
-PAYLOAD_SIZE=${6:-1024}
+URI=${1:-mongodb://localhost:27017/bare-metal?safe=true&w=majority&readPreference=nearest&appName=bare-metal-producer}
+MESSAGE_COUNT=${2:-2500}
+PAYLOAD_SIZE=${3:-1024}
 
 CMD="docker run \
             --cpus 1 \
-            --env consumer_modvalue=1000 \
-            --env spring_rabbitmq_host=${HOST} \
-            --env spring_rabbitmq_virtual-host=${VHOST} \
-            --env spring.rabbitmq.username=${USERNAME} \
-            --env spring.rabbitmq.password=${PASSWORD} \
+            --env spring_data_mongodb_uri=${URI} \
             --interactive  \
-            --name amqp-producer \
+            --name mongodb-producer \
             --network host \
             --rm \
             --tty \
-            kurron/amqp-bare-metal-producer:latest \
+            kurron/mongodb-bare-metal-producer:latest \
             --number-of-messages=${MESSAGE_COUNT} \
             --payload-size=${PAYLOAD_SIZE}"
 

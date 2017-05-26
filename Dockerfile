@@ -4,4 +4,4 @@ MAINTAINER Ron Kurr "kurr@jvmguy.com"
 
 ENTRYPOINT ["java", "-server", "-XX:MaxRAM=2g", "-Xms1563m", "-Xmx1563m", "-XX:+UseSerialGC", "-XX:+ScavengeBeforeFullGC", "-XX:+CMSScavengeBeforeRemark", "-XX:MinHeapFreeRatio=20", "-XX:MaxHeapFreeRatio=40", "-Dsun.net.inetaddr.ttl=60", "-Djava.awt.headless=true", "-jar", "/opt/microservice.jar"]
 
-COPY build/libs/amqp-bare-metal-producer-0.0.0.RELEASE.jar /opt/microservice.jar
+COPY build/libs/mongodb-bare-metal-producer-0.0.0.RELEASE.jar /opt/microservice.jar
