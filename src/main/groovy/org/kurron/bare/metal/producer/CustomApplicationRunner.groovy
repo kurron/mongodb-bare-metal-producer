@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.MongoOperations
 
 import java.util.concurrent.ThreadLocalRandom
 
@@ -19,7 +19,7 @@ class CustomApplicationRunner implements ApplicationRunner {
      * Handles AMQP communications.
      */
     @Autowired
-    private MongoTemplate theTemplate
+    private MongoOperations theTemplate
 
     @Autowired
     private ConfigurableApplicationContext theContext
@@ -49,13 +49,15 @@ class CustomApplicationRunner implements ApplicationRunner {
         def messageCount = Optional.ofNullable(arguments.getOptionValues('number-of-messages')).orElse(['100'])
         def messageSize = Optional.ofNullable(arguments.getOptionValues('payload-size')).orElse(['1024'])
 
-        def numberOfMessages = messageCount.first().toInteger()
+        // reset the database
+        theTemplate.dropCollection( Model )
+
+        def numberOfDocuments = messageCount.first().toInteger()
         def payloadSize = messageSize.first().toInteger()
 
-        log.info "Inserting ${numberOfMessages} messages with a binary payload size of ${payloadSize} to the database"
+        log.info "Inserting ${numberOfDocuments} documents with a binary payload size of ${payloadSize} to the database"
 
-
-        def messages = (1..numberOfMessages).collect {
+        def messages = (1..numberOfDocuments).collect {
             def buffer = new byte[payloadSize]
             randomize( buffer )
             createModel( buffer )
